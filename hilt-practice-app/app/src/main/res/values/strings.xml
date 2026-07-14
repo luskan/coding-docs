@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">Hilt Practice</string>
-    <string name="setup_ready">Part 1 · Hilt setup ready\n\nHilt application registered: %1$s\nHilt 2.60 · KSP 2.2.10-2.0.2</string>
+    <string name="part_2_title">Part 2 · Hilt basics</string>
+    <string name="part_2_graph">MainActivity → WordManager → WordsRepository</string>
+    <string name="basic_word">Basic repository: %1$s</string>
+    <string name="next_word">Next word</string>
 </resources>
