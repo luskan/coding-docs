@@ -7,4 +7,6 @@ class WordManager @Inject constructor(
     @param:FancyWords private val wordsRepository: WordsRepository,
 ) {
     fun nextWord(): String = wordsRepository.getWords().random()
+
+    fun usesRepository(repository: WordsRepository): Boolean = wordsRepository === repository
 }
