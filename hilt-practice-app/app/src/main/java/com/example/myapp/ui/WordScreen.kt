@@ -12,6 +12,8 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -24,11 +26,13 @@ fun WordScreen(
     activitySessionsSame: Boolean,
     composeViewModel: WordViewModel = hiltViewModel(),
     part7ViewModel: Part7ViewModel = hiltViewModel(),
+    part8ViewModel: Part8ViewModel = hiltViewModel(),
 ) {
     val detailViewModel: WordDetailViewModel =
         hiltViewModel<WordDetailViewModel, WordDetailViewModel.Factory>(
             creationCallback = { factory -> factory.create(DETAIL_WORD_ID) },
         )
+    val syncState by part8ViewModel.syncState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -39,11 +43,11 @@ fun WordScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = "Part 7 · Entry points, Lazy & Provider",
+            text = "Part 8 · Injected coroutine contexts",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
-        Text("Manual doorway · first use · every use")
+        Text("Main → IO · application scope → Default → IO")
         Spacer(Modifier.height(16.dp))
         Text(
             text = composeViewModel.currentWord,
@@ -94,12 +98,42 @@ fun WordScreen(
         Button(onClick = part7ViewModel::createTwoRounds) {
             Text("Create two rounds")
         }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "@MainDispatcher → @IoDispatcher",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Async load: ${part8ViewModel.asyncLoadStatus.asDisplayName()}")
+        Text("Async words: ${part8ViewModel.asyncWords.asDisplayWords()}")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = part8ViewModel::loadWords) {
+            Text("Load on injected IO dispatcher")
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "@ApplicationScope on @DefaultDispatcher",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Application sync: ${syncState.status.asDisplayName()}")
+        Text("Completed syncs: ${syncState.completedSyncs}")
+        Text("Synced words: ${syncState.words.asDisplayWords()}")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = part8ViewModel::syncInApplicationScope) {
+            Text("Start application-scope sync")
+        }
         Spacer(Modifier.height(24.dp))
     }
 }
 
 private fun Int?.asDisplayId(): String = this?.let { "#$it" } ?: "—"
 
-private fun Pair<Int, Int>?.asDisplayIds(): String = this?.let { "#${it.first}, #${it.second}" } ?: "—"
+private fun Pair<Int, Int>?.asDisplayIds(): String =
+    this?.let { "#${it.first}, #${it.second}" } ?: "—"
+
+private fun Enum<*>.asDisplayName(): String = name.lowercase()
+
+private fun List<String>.asDisplayWords(): String = if (isEmpty()) "—" else joinToString()
 
 private const val DETAIL_WORD_ID = 7

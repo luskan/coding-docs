@@ -2,6 +2,7 @@ package com.example.myapp
 
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
@@ -91,6 +92,30 @@ class WordManagerInstrumentedTest {
             .performScrollTo()
             .performClick()
         composeRule.onNodeWithText("Fresh unscoped instances: true")
+            .performScrollTo()
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithText("Load on injected IO dispatcher")
+            .performScrollTo()
+            .performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithText("Async words: device-fancy-word")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onNodeWithText("Async words: device-fancy-word")
+            .performScrollTo()
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithText("Start application-scope sync")
+            .performScrollTo()
+            .performClick()
+        composeRule.waitUntil(timeoutMillis = 5_000) {
+            composeRule.onAllNodesWithText("Application sync: complete")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onNodeWithText("Synced words: device-fancy-word")
             .performScrollTo()
             .assertIsDisplayed()
     }
