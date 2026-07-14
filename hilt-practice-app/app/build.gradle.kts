@@ -38,6 +38,9 @@ android {
 }
 
 dependencies {
+    implementation(project(":core"))
+    implementation(project(":feature:words"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.activity.compose)
@@ -46,13 +49,10 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.hilt.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.work)
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.hilt.android)
-    implementation(libs.kotlinx.coroutines.android)
     ksp(libs.hilt.compiler)
-    ksp(libs.androidx.hilt.compiler)
 
     // Dagger 2.60 still emits @CanIgnoreReturnValue but no longer supplies its annotation.
     compileOnly("com.google.errorprone:error_prone_annotations:2.36.0")

@@ -14,9 +14,13 @@ abstract class RepositoryModule {
 
     @BasicWords
     @Binds
-    abstract fun bindBasicWordsRepository(impl: WordsRepositoryImpl): WordsRepository
+    internal abstract fun bindBasicWordsRepository(
+        impl: WordsRepositoryImpl,
+    ): WordsRepository
 
     @FancyWords
     @Binds
-    abstract fun bindFancyWordsRepository(impl: FancyWordsRepositoryImpl): WordsRepository
+    internal abstract fun bindFancyWordsRepository(
+        impl: FancyWordsRepositoryImpl,
+    ): WordsRepository
 }

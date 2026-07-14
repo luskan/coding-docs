@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 }
 
 rootProject.name = "HiltPracticeApp"
-include(":app")
+include(":app", ":core", ":feature:words")

@@ -19,11 +19,6 @@
         </activity>
 
         <provider
-            android:name=".WordsProvider"
-            android:authorities="${applicationId}.words"
-            android:exported="false" />
-
-        <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="${applicationId}.androidx-startup"
             android:exported="false"

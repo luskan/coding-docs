@@ -1,4 +1,4 @@
-package com.example.myapp.core.di
+package com.example.myapp.work.di
 
 import android.content.Context
 import androidx.work.WorkManager

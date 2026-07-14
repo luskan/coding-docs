@@ -5,7 +5,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WordsRepositoryImpl @Inject constructor() : WordsRepository {
+internal class FancyWordsRepositoryImpl @Inject constructor() : WordsRepository {
     override val instanceId: Int = nextInstanceId.incrementAndGet()
 
     private val requests = AtomicInteger()
@@ -15,7 +15,7 @@ class WordsRepositoryImpl @Inject constructor() : WordsRepository {
 
     override fun getWords(): List<String> {
         requests.incrementAndGet()
-        return listOf("apple", "banana", "cherry")
+        return listOf("dragonfruit", "kumquat", "persimmon")
     }
 
     private companion object {

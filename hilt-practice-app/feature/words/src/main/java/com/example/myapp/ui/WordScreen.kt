@@ -44,10 +44,12 @@ fun WordScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = "Part 9 · Injected WorkManager worker",
+            text = "Part 10 · One graph across three modules",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
+        Text(":app → :feature:words → :core")
+        Spacer(Modifier.height(8.dp))
         Text("Main → IO · application scope → Default → IO")
         Spacer(Modifier.height(16.dp))
         Text(
