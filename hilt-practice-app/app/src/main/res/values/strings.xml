@@ -1,11 +1,3 @@
 <resources>
     <string name="app_name">Hilt Practice</string>
-    <string name="part_4_title">Part 4 · Hilt scopes</string>
-    <string name="part_4_model">Scoped = one instance per component instance</string>
-    <string name="manager_uses_fancy">WordManager (@FancyWords): %1$s</string>
-    <string name="basic_word">@BasicWords: %1$s</string>
-    <string name="fancy_word">@FancyWords: %1$s</string>
-    <string name="singleton_status">@Singleton fancy #%1$d\ninterface alias === concrete: %2$b · requests: %3$d</string>
-    <string name="activity_scope_status">@ActivityScoped session #%1$d\ntwo injections same: %2$b · words seen: %3$d</string>
-    <string name="next_scoped_word">Next scoped word</string>
 </resources>
