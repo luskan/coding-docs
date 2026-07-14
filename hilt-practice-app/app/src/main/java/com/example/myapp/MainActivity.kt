@@ -6,6 +6,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
+import com.example.myapp.core.WordComparison
 import com.example.myapp.core.WordManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -14,18 +15,29 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     @Inject lateinit var wordManager: WordManager
+    @Inject lateinit var wordComparison: WordComparison
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         val padding = (24 * resources.displayMetrics.density).toInt()
-        val wordView = TextView(this).apply {
+        val managerWordView = TextView(this).apply {
             gravity = Gravity.CENTER
-            textSize = 28f
+            textSize = 22f
+        }
+        val basicWordView = TextView(this).apply {
+            gravity = Gravity.CENTER
+            textSize = 18f
+        }
+        val fancyWordView = TextView(this).apply {
+            gravity = Gravity.CENTER
+            textSize = 18f
         }
         val nextButton = Button(this).apply {
-            setText(R.string.next_word)
-            setOnClickListener { wordView.showNextWord() }
+            setText(R.string.compare_again)
+            setOnClickListener {
+                showWords(managerWordView, basicWordView, fancyWordView)
+            }
         }
 
         setContentView(LinearLayout(this).apply {
@@ -34,23 +46,32 @@ class MainActivity : ComponentActivity() {
             setPadding(padding, padding, padding, padding)
             addView(TextView(context).apply {
                 gravity = Gravity.CENTER
-                setText(R.string.part_2_title)
+                setText(R.string.part_3_title)
                 textSize = 22f
             })
             addView(TextView(context).apply {
                 gravity = Gravity.CENTER
                 setPadding(0, padding, 0, padding)
-                setText(R.string.part_2_graph)
+                setText(R.string.part_3_key)
                 textSize = 16f
             })
-            addView(wordView)
+            addView(managerWordView)
+            addView(basicWordView)
+            addView(fancyWordView)
             addView(nextButton)
         })
 
-        wordView.showNextWord()
+        showWords(managerWordView, basicWordView, fancyWordView)
     }
 
-    private fun TextView.showNextWord() {
-        text = getString(R.string.basic_word, wordManager.nextWord())
+    private fun showWords(
+        managerWordView: TextView,
+        basicWordView: TextView,
+        fancyWordView: TextView,
+    ) {
+        val sample = wordComparison.nextSample()
+        managerWordView.text = getString(R.string.manager_uses_fancy, wordManager.nextWord())
+        basicWordView.text = getString(R.string.basic_word, sample.basic)
+        fancyWordView.text = getString(R.string.fancy_word, sample.fancy)
     }
 }

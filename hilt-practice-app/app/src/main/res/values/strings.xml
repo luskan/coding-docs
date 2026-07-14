@@ -1,7 +1,9 @@
 <resources>
     <string name="app_name">Hilt Practice</string>
-    <string name="part_2_title">Part 2 · Hilt basics</string>
-    <string name="part_2_graph">MainActivity → WordManager → WordsRepository</string>
-    <string name="basic_word">Basic repository: %1$s</string>
-    <string name="next_word">Next word</string>
+    <string name="part_3_title">Part 3 · Hilt qualifiers</string>
+    <string name="part_3_key">Binding key = qualifier + type</string>
+    <string name="manager_uses_fancy">WordManager (@FancyWords): %1$s</string>
+    <string name="basic_word">@BasicWords: %1$s</string>
+    <string name="fancy_word">@FancyWords: %1$s</string>
+    <string name="compare_again">Compare again</string>
 </resources>
