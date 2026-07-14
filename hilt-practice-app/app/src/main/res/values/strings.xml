@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Hilt Practice</string>
+    <string name="setup_ready">Part 1 · Hilt setup ready\n\nHilt application registered: %1$s\nHilt 2.60 · KSP 2.2.10-2.0.2</string>
+</resources>
