@@ -27,6 +27,7 @@ fun WordScreen(
     composeViewModel: WordViewModel = hiltViewModel(),
     part7ViewModel: Part7ViewModel = hiltViewModel(),
     part8ViewModel: Part8ViewModel = hiltViewModel(),
+    part9ViewModel: Part9ViewModel = hiltViewModel(),
 ) {
     val detailViewModel: WordDetailViewModel =
         hiltViewModel<WordDetailViewModel, WordDetailViewModel.Factory>(
@@ -43,7 +44,7 @@ fun WordScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = "Part 8 · Injected coroutine contexts",
+            text = "Part 9 · Injected WorkManager worker",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
@@ -123,6 +124,18 @@ fun WordScreen(
         Button(onClick = part8ViewModel::syncInApplicationScope) {
             Text("Start application-scope sync")
         }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "@HiltWorker → HiltWorkerFactory → AsyncWordsLoader",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Worker state: ${part9ViewModel.workerState.asWorkerDisplayName()}")
+        Text("Worker words: ${part9ViewModel.workerWords.asDisplayWords()}")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = part9ViewModel::enqueueSync) {
+            Text("Enqueue injected worker")
+        }
         Spacer(Modifier.height(24.dp))
     }
 }
@@ -133,6 +146,8 @@ private fun Pair<Int, Int>?.asDisplayIds(): String =
     this?.let { "#${it.first}, #${it.second}" } ?: "—"
 
 private fun Enum<*>.asDisplayName(): String = name.lowercase()
+
+private fun Enum<*>?.asWorkerDisplayName(): String = this?.name?.lowercase() ?: "not enqueued"
 
 private fun List<String>.asDisplayWords(): String = if (isEmpty()) "—" else joinToString()
 

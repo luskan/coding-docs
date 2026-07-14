@@ -7,6 +7,10 @@ import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.test.ext.junit.runners.AndroidJUnit4
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import androidx.work.testing.SynchronousExecutor
+import androidx.work.testing.WorkManagerTestInitHelper
 import com.example.myapp.core.WordComparison
 import com.example.myapp.core.WordManager
 import com.example.myapp.core.WordsRepository
@@ -20,6 +24,7 @@ import javax.inject.Inject
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
+import org.junit.After
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -38,6 +43,7 @@ class WordManagerInstrumentedTest {
     @Inject lateinit var wordManager: WordManager
     @Inject lateinit var wordComparison: WordComparison
     @Inject lateinit var providerClient: WordsProviderClient
+    @Inject lateinit var workerFactory: HiltWorkerFactory
 
     @field:FancyWords
     @Inject
@@ -46,6 +52,22 @@ class WordManagerInstrumentedTest {
     @Before
     fun setUp() {
         hiltRule.inject()
+
+        val executor = SynchronousExecutor()
+        val configuration = Configuration.Builder()
+            .setExecutor(executor)
+            .setTaskExecutor(executor)
+            .setWorkerFactory(workerFactory)
+            .build()
+        WorkManagerTestInitHelper.initializeTestWorkManager(
+            composeRule.activity.applicationContext,
+            configuration,
+        )
+    }
+
+    @After
+    fun tearDown() {
+        WorkManagerTestInitHelper.closeWorkDatabase()
     }
 
     @Test
@@ -116,6 +138,18 @@ class WordManagerInstrumentedTest {
                 .isNotEmpty()
         }
         composeRule.onNodeWithText("Synced words: device-fancy-word")
+            .performScrollTo()
+            .assertIsDisplayed()
+
+        composeRule.onNodeWithText("Enqueue injected worker")
+            .performScrollTo()
+            .performClick()
+        composeRule.waitUntil(timeoutMillis = 10_000) {
+            composeRule.onAllNodesWithText("Worker state: succeeded")
+                .fetchSemanticsNodes()
+                .isNotEmpty()
+        }
+        composeRule.onNodeWithText("Worker words: device-fancy-word")
             .performScrollTo()
             .assertIsDisplayed()
     }
