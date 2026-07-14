@@ -38,11 +38,11 @@ fun WordScreen(
         verticalArrangement = Arrangement.Center,
     ) {
         Text(
-            text = "Part 5 · Hilt ViewModels",
+            text = "Part 6 · Testing with Hilt",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
-        Text("ViewModelProvider owns when; Hilt owns how")
+        Text("Each Hilt test builds an editable copy of the graph")
         Spacer(Modifier.height(24.dp))
         Text(
             text = composeViewModel.currentWord,
