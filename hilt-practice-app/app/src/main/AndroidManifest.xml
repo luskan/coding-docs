@@ -16,6 +16,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <provider
+            android:name=".WordsProvider"
+            android:authorities="${applicationId}.words"
+            android:exported="false" />
     </application>
 
 </manifest>

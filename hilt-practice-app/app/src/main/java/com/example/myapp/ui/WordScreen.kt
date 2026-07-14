@@ -23,6 +23,7 @@ fun WordScreen(
     activitySessionId: Int,
     activitySessionsSame: Boolean,
     composeViewModel: WordViewModel = hiltViewModel(),
+    part7ViewModel: Part7ViewModel = hiltViewModel(),
 ) {
     val detailViewModel: WordDetailViewModel =
         hiltViewModel<WordDetailViewModel, WordDetailViewModel.Factory>(
@@ -35,33 +36,70 @@ fun WordScreen(
             .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
+        verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = "Part 6 · Testing with Hilt",
+            text = "Part 7 · Entry points, Lazy & Provider",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
-        Text("Each Hilt test builds an editable copy of the graph")
-        Spacer(Modifier.height(24.dp))
+        Text("Manual doorway · first use · every use")
+        Spacer(Modifier.height(16.dp))
         Text(
             text = composeViewModel.currentWord,
             style = MaterialTheme.typography.headlineMedium,
         )
-        Text("SavedStateHandle key: word")
         Text("Saved changes: ${composeViewModel.savedChanges}")
-        Spacer(Modifier.height(16.dp))
         Text("Activity delegate === Compose: ${activityViewModel === composeViewModel}")
-        Text("ViewModel instance #${composeViewModel.instanceId}")
-        Text("@ActivityScoped session #$activitySessionId")
-        Text("Two session injections same: $activitySessionsSame")
-        Spacer(Modifier.height(16.dp))
+        Text("Activity session #$activitySessionId · same: $activitySessionsSame")
         Text(detailViewModel.description)
-        Spacer(Modifier.height(24.dp))
+        Spacer(Modifier.height(12.dp))
         Button(onClick = composeViewModel::chooseAndSaveAnotherWord) {
             Text("Choose and save another word")
         }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "ContentProvider → EntryPointAccessors → WordManager",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Provider returned: ${part7ViewModel.providerWord ?: "—"}")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = part7ViewModel::queryContentProvider) {
+            Text("Query content provider")
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "dagger.Lazy<ExpensiveDictionary>",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Definitions: ${part7ViewModel.definitions}")
+        Text("Dictionary constructions: ${part7ViewModel.dictionaryConstructionCount}")
+        Text("Dictionary instance: ${part7ViewModel.dictionaryInstanceId.asDisplayId()}")
+        Text(part7ViewModel.definitionText ?: "Definition: —")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = { part7ViewModel.define(composeViewModel.currentWord) }) {
+            Text("Define current word")
+        }
+
+        Spacer(Modifier.height(24.dp))
+        Text(
+            text = "Provider<GameRound>",
+            style = MaterialTheme.typography.titleMedium,
+        )
+        Text("Round IDs: ${part7ViewModel.roundIds.asDisplayIds()}")
+        Text("Fresh unscoped instances: ${part7ViewModel.freshRoundInstances ?: "—"}")
+        Spacer(Modifier.height(8.dp))
+        Button(onClick = part7ViewModel::createTwoRounds) {
+            Text("Create two rounds")
+        }
+        Spacer(Modifier.height(24.dp))
     }
 }
+
+private fun Int?.asDisplayId(): String = this?.let { "#$it" } ?: "—"
+
+private fun Pair<Int, Int>?.asDisplayIds(): String = this?.let { "#${it.first}, #${it.second}" } ?: "—"
 
 private const val DETAIL_WORD_ID = 7
