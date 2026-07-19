@@ -1,0 +1,20 @@
+---
+title: "Hilt: A Practical 10-Part Tutorial"
+subtitle: "Dependency injection on modern Android (AGP 9 / Hilt 2.60)"
+author: "Marcin J."
+language: en-US
+# `date` (a bare year, kept parseable so the OPF <dc:date> stays valid) and the
+# separate "Version N" title-page line are both set by build-epub.sh from its
+# VERSION/YEAR knob, so the edition lives in one place.
+# Stable book id: keep this fixed across rebuilds so e-readers treat a
+# re-import as the same title (preserving reading position and highlights).
+identifier:
+  - scheme: uuid
+    text: "urn:uuid:b3f2a1c4-7d58-4e2a-9c6b-0a1e2f3d4c5b"
+rights: "All rights reserved."
+description: >
+  A hands-on, verify-everything tour of Hilt for Android — setup on AGP 9,
+  the injection mental model, qualifiers, scopes, ViewModels, testing, entry
+  points, coroutines, WorkManager, and multi-module graphs. Every part is
+  paired with a practice section.
+...
