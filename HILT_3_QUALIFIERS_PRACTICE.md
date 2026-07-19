@@ -1,13 +1,13 @@
 # Practice 3. Multiple bindings with qualifiers
 
-*Tutorial: [3 · Qualifiers](HILT_3_QUALIFIERS.md) · **Practice 3 of 10***
+*Tutorial: [3 - Qualifiers](HILT_3_QUALIFIERS.md) - **Practice 3 of 10***
 
 Start from the Part 3 state of [`hilt-practice-app/`](hilt-practice-app/). Its UI already proves that
 these two keys coexist:
 
 ```text
-@BasicWords WordsRepository → WordsRepositoryImpl
-@FancyWords WordsRepository → FancyWordsRepositoryImpl
+@BasicWords WordsRepository -> WordsRepositoryImpl
+@FancyWords WordsRepository -> FancyWordsRepositoryImpl
 ```
 
 Use a throwaway branch and keep every word set disjoint. Distinct values make a device check prove

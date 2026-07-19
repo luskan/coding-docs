@@ -1,6 +1,6 @@
 # Practice 6. Editing Hilt test graphs
 
-*Tutorial: [6 · Testing](HILT_6_TESTING.md) · **Practice 6 of 10***
+*Tutorial: [6 - Testing](HILT_6_TESTING.md) - **Practice 6 of 10***
 
 Start from the Part 6 state of [`hilt-practice-app/`](hilt-practice-app/). It keeps the local and
 instrumented replacement strategies in different source sets on purpose: `test/` contains a real

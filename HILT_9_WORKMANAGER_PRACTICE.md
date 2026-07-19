@@ -1,6 +1,6 @@
 # Practice 9. Joining WorkManager construction to the Hilt graph
 
-*Tutorial: [9 · WorkManager](HILT_9_WORKMANAGER.md) · **Practice 9 of 10***
+*Tutorial: [9 - WorkManager](HILT_9_WORKMANAGER.md) - **Practice 9 of 10***
 
 Start from the Part 9 state of [`hilt-practice-app/`](hilt-practice-app/). It has one
 `@HiltWorker` that awaits Part 8's `AsyncWordsLoader`, returns the loaded words as output
@@ -31,18 +31,18 @@ Trace one press of **Enqueue injected worker**:
 
 ```text
 Part9ViewModel
-  → Provider<WorkManager>.get()
-  → OneTimeWorkRequest<SyncWordsWorker>
-  → WorkManager database and scheduler
-  → HiltWorkerFactory class-name map
-  → SyncWordsWorker_AssistedFactory
+  -> Provider<WorkManager>.get()
+  -> OneTimeWorkRequest<SyncWordsWorker>
+  -> WorkManager database and scheduler
+  -> HiltWorkerFactory class-name map
+  -> SyncWordsWorker_AssistedFactory
       WorkManager: Context + WorkerParameters
       Hilt SingletonComponent: AsyncWordsLoader
-  → @IoDispatcher
-  → @FancyWords WordsRepository
-  → Result.success(output Data)
-  → WorkInfo flow
-  → Worker words on screen
+  -> @IoDispatcher
+  -> @FancyWords WordsRepository
+  -> Result.success(output Data)
+  -> WorkInfo flow
+  -> Worker words on screen
 ```
 
 For each arrow, identify:
@@ -207,9 +207,9 @@ may not reference bindings with different scopes:
 ```
 
 The generated trace should include
-`SyncWordsWorker → SyncWordsWorker_AssistedFactory → SyncWordsWorker_HiltModule.bind`. This is
-compile-time proof that a Worker may inject bindings available from `SingletonComponent`—the app
-uses an unscoped loader and singleton repository—but not an Activity/ViewModel-owned object. A
+`SyncWordsWorker -> SyncWordsWorker_AssistedFactory -> SyncWordsWorker_HiltModule.bind`. This is
+compile-time proof that a Worker may inject bindings available from `SingletonComponent`--the app
+uses an unscoped loader and singleton repository--but not an Activity/ViewModel-owned object. A
 compatible `@Reusable` binding can also be available from `SingletonComponent`.
 
 Remove `WordSession` and finish this task with a green build.

@@ -1,6 +1,6 @@
 # 10. Hilt in a multi-module project
 
-*Reading order: [1 · Setup](HILT_1_SETUP.md) → [2 · Basics](HILT_2_BASICS.md) → [3 · Qualifiers](HILT_3_QUALIFIERS.md) → [4 · Scopes](HILT_4_SCOPES.md) → [5 · ViewModels](HILT_5_VIEWMODELS.md) → [6 · Testing](HILT_6_TESTING.md) → [7 · Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) → [8 · Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) → [9 · WorkManager](HILT_9_WORKMANAGER.md) → **10 · Multi-module***
+*Reading order: [1 - Setup](HILT_1_SETUP.md) -> [2 - Basics](HILT_2_BASICS.md) -> [3 - Qualifiers](HILT_3_QUALIFIERS.md) -> [4 - Scopes](HILT_4_SCOPES.md) -> [5 - ViewModels](HILT_5_VIEWMODELS.md) -> [6 - Testing](HILT_6_TESTING.md) -> [7 - Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) -> [8 - Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) -> [9 - WorkManager](HILT_9_WORKMANAGER.md) -> **10 - Multi-module***
 
 The first nine parts kept every production class in `:app`. This part makes a structural change,
 not a new kind of binding: move reusable graph code to `:core`, move the words UI and its Android
@@ -35,9 +35,9 @@ binding reachable if that library is absent from the application's dependency cl
 The companion app now has this module dependency graph:
 
 ```text
-:app  ───────────────→  :core
-  │                       ↑
-  └──→  :feature:words  ──┘
+:app ------------------------> :core
+  |
+  `----> :feature:words -----> :core
 
 :app
   MyApplication (@HiltAndroidApp), MainActivity, app tests
@@ -52,7 +52,7 @@ The companion app now has this module dependency graph:
 
 `:app` depends directly on both libraries. `:feature:words` also depends on `:core` because its
 source imports `WordManager`, `WordsRepository`, and the coroutine qualifiers. The direct
-`:app` → `:core` edge lets `MainActivity` and the app-owned tests name core APIs without relying on
+`:app` -> `:core` edge lets `MainActivity` and the app-owned tests name core APIs without relying on
 the feature to re-export them.
 
 Register both libraries:
@@ -89,7 +89,7 @@ plugins {
 For this application component tree, there is one application root:
 
 ```kotlin
-// :app — MyApplication.kt
+// :app -- MyApplication.kt
 package com.example.myapp
 
 import android.app.Application
@@ -190,7 +190,7 @@ dependencies {
 `:app` remains the application root and owns an injected `HiltWorkerFactory`:
 
 ```kotlin
-// app/build.gradle.kts — relevant production dependencies
+// app/build.gradle.kts -- relevant production dependencies
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -235,7 +235,7 @@ root consumes the resulting classes and Hilt metadata.
 The interface remains public because feature code and app tests use it:
 
 ```kotlin
-// :core — WordsRepository.kt
+// :core -- WordsRepository.kt
 package com.example.myapp.core
 
 interface WordsRepository {
@@ -249,7 +249,7 @@ interface WordsRepository {
 The two concrete repositories are implementation details of `:core`:
 
 ```kotlin
-// :core — FancyWordsRepositoryImpl.kt
+// :core -- FancyWordsRepositoryImpl.kt
 package com.example.myapp.core
 
 import java.util.concurrent.atomic.AtomicInteger
@@ -281,7 +281,7 @@ consumers and tests may need to request those public graph keys. The binding mod
 public, while its methods and implementation-typed parameters remain internal:
 
 ```kotlin
-// :core — RepositoryModule.kt
+// :core -- RepositoryModule.kt
 package com.example.myapp.core.di
 
 import com.example.myapp.core.FancyWordsRepositoryImpl
@@ -312,7 +312,7 @@ abstract class RepositoryModule {
 
 Hilt can install a non-public module by generating a public wrapper, so `internal` is often a good
 default for a library's Hilt-only module. This series needs a different tradeoff: Part 6's app-owned
-tests name `RepositoryModule` in `@TestInstallIn(replaces = …)` and `@UninstallModules`. Kotlin
+tests name `RepositoryModule` in `@TestInstallIn(replaces = ...)` and `@UninstallModules`. Kotlin
 cannot name an internal declaration across the module boundary, and Hilt 2.60 also rejects an
 internal module in `@TestInstallIn#replaces`. Keeping the module public makes it an explicit test
 seam without exposing either concrete repository.
@@ -329,7 +329,7 @@ The feature injects public core types normally. No adapter, component dependency
 is required:
 
 ```kotlin
-// :feature:words — FeatureWordsReader.kt
+// :feature:words -- FeatureWordsReader.kt
 package com.example.myapp.feature.words
 
 import com.example.myapp.core.WordManager
@@ -375,7 +375,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 fun WordScreen(
     composeViewModel: WordViewModel = hiltViewModel(),
 ) {
-    // …
+    // ...
 }
 ```
 
@@ -517,8 +517,8 @@ The verified Part 10 checkpoint has 12 passing Robolectric/JUnit tests and one c
 test. The normal APK cold-starts with the production application and displays:
 
 ```text
-Part 10 · One graph across three modules
-:app → :feature:words → :core
+Part 10 - One graph across three modules
+:app -> :feature:words -> :core
 ```
 
 After pressing **Enqueue injected worker**, it displays:
@@ -534,23 +534,23 @@ proves the production `HiltWorkerFactory` and feature-generated map path.
 
 ---
 
-## Multi-module — error → cause
+## Multi-module -- error -> cause
 
 | Error | Cause |
 |---|---|
 | `Unresolved reference 'core'` / `Unresolved reference 'WordManager'` in `:feature:words` | The feature source imports a core API but lacks `implementation(project(":core"))` |
-| `Cannot access 'class FancyWordsRepositoryImpl …': it is internal in file.` | Another module tried to name a core implementation; inject the public qualified `WordsRepository` contract instead |
-| `[Dagger/MissingBinding] @FancyWords WordsRepository cannot be provided…` | No reachable module contributes that exact qualified key; restore the `@FancyWords @Binds` method or request the key that actually exists |
+| `Cannot access 'class FancyWordsRepositoryImpl ...': it is internal in file.` | Another module tried to name a core implementation; inject the public qualified `WordsRepository` contract instead |
+| `[Dagger/MissingBinding] @FancyWords WordsRepository cannot be provided...` | No reachable module contributes that exact qualified key; restore the `@FancyWords @Binds` method or request the key that actually exists |
 | The same missing-binding diagnostic appears after removing core's KSP processor | `:core` did not generate its factories and Hilt aggregation metadata; restore `ksp(libs.hilt.compiler)` in the source-owning module |
 | `package com.google.errorprone.annotations does not exist` | The module now owns a real `@Inject` use but lacks `compileOnly("com.google.errorprone:error_prone_annotations:2.36.0")` required by this Dagger 2.60 toolchain |
 | `Expected @AndroidEntryPoint to have a value. Did you forget to apply the Gradle Plugin? (com.google.dagger.hilt.android)` | The Android module with the entry point did not apply the Hilt plugin, or another processor configuration overwrote Hilt's arguments |
-| `@TestInstallIn#replaces() cannot contain internal Hilt modules, but found: …RepositoryModule` | A production module made `internal` is being replaced from another module; keep the replaceable module public and hide its binding methods/implementations instead |
-| `Cannot process multiple app roots in the same compilation unit: …` | Two `@HiltAndroidApp` roots were declared in one compilation unit |
-| `Cannot process new app roots when there are app roots from a previous compilation unit: …` | A dependency library contributed an app root to the application that already has one; remove the library root |
-| `Application class, …, annotated with @HiltAndroidApp must be defined in a Gradle android application module…` | `@HiltAndroidApp` was placed in an Android library instead of the consuming application module |
-| Runtime `Unable to get provider … ClassNotFoundException` for `com.example.myapp.feature.words.WordsProvider` | The feature manifest used a relative provider name even though the retained Kotlin package differs from the feature namespace; use the full class name |
-| Runtime `Could not instantiate …SyncWordsWorker`, followed by `NoSuchMethodException` / `Could not create Worker` | The module containing `@HiltWorker` lacks AndroidX's Hilt processor, or WorkManager was not given the generated `HiltWorkerFactory` path |
-| `[Dagger/DuplicateBindings] …WordsRepository is bound multiple times` | The old app-owned binding and the moved core binding both remain on the final graph; keep one owner |
+| `@TestInstallIn#replaces() cannot contain internal Hilt modules, but found: ...RepositoryModule` | A production module made `internal` is being replaced from another module; keep the replaceable module public and hide its binding methods/implementations instead |
+| `Cannot process multiple app roots in the same compilation unit: ...` | Two `@HiltAndroidApp` roots were declared in one compilation unit |
+| `Cannot process new app roots when there are app roots from a previous compilation unit: ...` | A dependency library contributed an app root to the application that already has one; remove the library root |
+| `Application class, ..., annotated with @HiltAndroidApp must be defined in a Gradle android application module...` | `@HiltAndroidApp` was placed in an Android library instead of the consuming application module |
+| Runtime `Unable to get provider ... ClassNotFoundException` for `com.example.myapp.feature.words.WordsProvider` | The feature manifest used a relative provider name even though the retained Kotlin package differs from the feature namespace; use the full class name |
+| Runtime `Could not instantiate ...SyncWordsWorker`, followed by `NoSuchMethodException` / `Could not create Worker` | The module containing `@HiltWorker` lacks AndroidX's Hilt processor, or WorkManager was not given the generated `HiltWorkerFactory` path |
+| `[Dagger/DuplicateBindings] ...WordsRepository is bound multiple times` | The old app-owned binding and the moved core binding both remain on the final graph; keep one owner |
 
 ---
 
@@ -569,7 +569,7 @@ Prefer the standard component tree and plain module dependencies until one of th
 
 ## Quick reference
 
-| I want to… | Do this |
+| I want to... | Do this |
 |---|---|
 | Keep one graph across `:app`, features, and core | Put every contribution on the app dependency closure; keep one `@HiltAndroidApp` root for that app |
 | Choose a binding lifetime | Use `@InstallIn` and a matching Hilt scope; Gradle module placement does not choose it |

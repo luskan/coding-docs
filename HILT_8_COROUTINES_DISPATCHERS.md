@@ -1,6 +1,6 @@
-# 8. Coroutines — injected dispatchers and an application scope
+# 8. Coroutines -- injected dispatchers and an application scope
 
-*Reading order: [1 · Setup](HILT_1_SETUP.md) → [2 · Basics](HILT_2_BASICS.md) → [3 · Qualifiers](HILT_3_QUALIFIERS.md) → [4 · Scopes](HILT_4_SCOPES.md) → [5 · ViewModels](HILT_5_VIEWMODELS.md) → [6 · Testing](HILT_6_TESTING.md) → [7 · Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) → **8 · Coroutines** → [9 · WorkManager](HILT_9_WORKMANAGER.md) → [10 · Multi-module](HILT_10_MULTIMODULE.md)*
+*Reading order: [1 - Setup](HILT_1_SETUP.md) -> [2 - Basics](HILT_2_BASICS.md) -> [3 - Qualifiers](HILT_3_QUALIFIERS.md) -> [4 - Scopes](HILT_4_SCOPES.md) -> [5 - ViewModels](HILT_5_VIEWMODELS.md) -> [6 - Testing](HILT_6_TESTING.md) -> [7 - Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) -> **8 - Coroutines** -> [9 - WorkManager](HILT_9_WORKMANAGER.md) -> [10 - Multi-module](HILT_10_MULTIMODULE.md)*
 
 Part 3's exact-key rule applies directly to coroutines: IO, Default, and Main are all
 `CoroutineDispatcher`, so qualifiers distinguish them. Injection also makes their execution
@@ -146,7 +146,7 @@ a scope because each call returns a standard dispatcher object. Do not name the 
 
 ## 3. Add an asynchronous boundary without rewriting old APIs
 
-The repository built in Parts 2–7 stays synchronous. `WordManager`, ViewModel initialization, and
+The repository built in Parts 2-7 stays synchronous. `WordManager`, ViewModel initialization, and
 `ContentProvider.query()` all use that contract. A small adapter adds the suspend boundary and
 requests the existing fancy repository key:
 
@@ -210,7 +210,7 @@ object CoroutinesScopeModule {
 
 Here `@ApplicationScope` selects the key; `@Singleton` caches one scope in each
 `SingletonComponent`. A qualifier on an ordinary `@Provides` function parameter is written
-without `@param:`—that use-site prefix is only valid for primary-constructor parameters.
+without `@param:`--that use-site prefix is only valid for primary-constructor parameters.
 
 The running app keeps observable sync state in a singleton manager and returns the launched job:
 
@@ -317,11 +317,14 @@ class Part8ViewModel @Inject constructor(
 ```
 
 Passing `mainDispatcher` to `launch` changes the dispatcher for this child while
-`viewModelScope`'s job still owns and cancels it. The app displays both paths:
+`viewModelScope`'s job still owns and cancels it. The app summarizes the routes as
+`Main -> IO - application scope -> Default -> IO` and labels their sections
+`@MainDispatcher -> @IoDispatcher` and `@ApplicationScope on @DefaultDispatcher`. Expanded, the
+dependency paths are:
 
 ```text
-ViewModel job:     @MainDispatcher → AsyncWordsLoader → @IoDispatcher
-Application job:  @ApplicationScope on @DefaultDispatcher → AsyncWordsLoader → @IoDispatcher
+ViewModel job:     @MainDispatcher -> AsyncWordsLoader -> @IoDispatcher
+Application job:  @ApplicationScope on @DefaultDispatcher -> AsyncWordsLoader -> @IoDispatcher
 ```
 
 An injected `@MainDispatcher CoroutineDispatcher` is a Dagger key; it does **not** replace the
@@ -467,17 +470,17 @@ application scope in `@After`.
 
 ---
 
-## Coroutines — error → cause
+## Coroutines -- error -> cause
 
 | Error | Cause |
 |---|---|
 | `[Dagger/DuplicateBindings] kotlinx.coroutines.CoroutineDispatcher is bound multiple times:` | Two reachable providers supply the same unqualified dispatcher key; restore distinct qualifiers on providers and request those exact keys at consumers |
-| `[Dagger/MissingBinding] @IoDispatcher kotlinx.coroutines.CoroutineDispatcher cannot be provided…` | The injection site requests a qualified key that no installed module supplies, often because the test replacement omitted one key |
+| `[Dagger/MissingBinding] @IoDispatcher kotlinx.coroutines.CoroutineDispatcher cannot be provided...` | The injection site requests a qualified key that no installed module supplies, often because the test replacement omitted one key |
 | `Detected use of different schedulers. If you need to use several test coroutine dispatchers, create one TestCoroutineScheduler and pass it to each of them.` | Test dispatchers were constructed with different schedulers; inject one scheduler and pass it to every dispatcher and to `runTest` |
 | Virtual-time test stays queued, hangs, or observes `IDLE` | The work uses a different scheduler/real dispatcher, or a `StandardTestDispatcher` was never driven; share the scheduler and use `runCurrent`/`advanceUntilIdle`/`join` |
 | `@param: annotations can only be applied to primary constructor parameters.` | Used `@param:DefaultDispatcher` on an ordinary `@Provides` function parameter; use bare `@DefaultDispatcher` there |
-| `[Dagger/IncompatiblyScopedBindings] …` on the application scope | A reachable `@Singleton` scope binding is installed in a component that does not own `@Singleton`; install it in `SingletonComponent` |
-| `IllegalStateException: Module with the Main dispatcher is missing…` | Code used global `Dispatchers.Main` without a platform Main implementation; on Android add the matching `kotlinx-coroutines-android` artifact |
+| `[Dagger/IncompatiblyScopedBindings] ...` on the application scope | A reachable `@Singleton` scope binding is installed in a component that does not own `@Singleton`; install it in `SingletonComponent` |
+| `IllegalStateException: Module with the Main dispatcher is missing...` | Code used global `Dispatchers.Main` without a platform Main implementation; on Android add the matching `kotlinx-coroutines-android` artifact |
 | `IllegalStateException: Module with the Main dispatcher had failed to initialize` | A plain JVM test found Android Main but cannot initialize its real looper; use Robolectric or set/reset Main around the test. Replacing `@MainDispatcher` alone does not set the global dispatcher |
 | KSP: `The name 'default' cannot be used because it is a Java keyword` | A `@Provides`/`@Binds` method is named `default`; Dagger emits Java, so rename it, for example `provideDefaultDispatcher` |
 
@@ -485,12 +488,12 @@ application scope in `@After`.
 
 ## Where to go next
 
-**[9 · WorkManager](HILT_9_WORKMANAGER.md)** — inject dependencies into work that Android can
+**[9 - WorkManager](HILT_9_WORKMANAGER.md)** -- inject dependencies into work that Android can
 reschedule after the app process disappears.
 
 ## Quick reference
 
-| I want to… | Do this |
+| I want to... | Do this |
 |---|---|
 | Make blocking execution replaceable | Inject `@IoDispatcher CoroutineDispatcher`; call `withContext(ioDispatcher)` |
 | Distinguish IO, Default, and Main | Define one qualifier per `CoroutineDispatcher` key |

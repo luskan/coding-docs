@@ -16,7 +16,7 @@ class WordDetailViewModel @AssistedInject constructor(
 
     val description: String = repository.getWords().let { words ->
         val word = words[wordId % words.size]
-        "Assisted word #$wordId → $word"
+        "Assisted word #$wordId -> $word"
     }
 
     @AssistedFactory

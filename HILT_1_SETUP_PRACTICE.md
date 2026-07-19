@@ -1,6 +1,6 @@
 # Practice 1. Hilt setup on AGP 9
 
-*Tutorial: [1 · Setup](HILT_1_SETUP.md) · **Practice 1 of 10***
+*Tutorial: [1 - Setup](HILT_1_SETUP.md) - **Practice 1 of 10***
 
 Use the project in [`hilt-practice-app/`](hilt-practice-app/). Its Hilt graph deliberately has no
 reachable user bindings or injection sites at this point: Part 1 configures Hilt and registers the
@@ -69,7 +69,7 @@ missing registration becomes a runtime crash instead of a harmless `no`.
    `kotlin.sourceSets` DSL while using built-in Kotlin.
 3. Restore the property and verify that the same command succeeds.
 
-Do not “fix” this by applying `org.jetbrains.kotlin.android`; that conflicts with AGP 9's built-in
+Do not "fix" this by applying `org.jetbrains.kotlin.android`; that conflicts with AGP 9's built-in
 Kotlin setup and hides the actual compatibility issue.
 
 ### 5. Build and verify the runtime result
@@ -85,9 +85,9 @@ adb shell am start -W \
 
 **Check:** the device shows all three facts:
 
-- `Part 1 · Hilt setup ready`
-- `Hilt application registered: yes`
-- `Hilt 2.60 · KSP 2.2.10-2.0.2`
+- the screen identifies itself as the Part 1 Hilt setup checkpoint;
+- `Hilt application registered: yes`; and
+- the version line reports Hilt 2.60 and KSP 2.2.10-2.0.2.
 
 A green build here validates the setup and the `@HiltAndroidApp` root. It does **not** yet exercise
 the `error_prone_annotations` workaround: the first reachable real injection in Part 2 adds methods

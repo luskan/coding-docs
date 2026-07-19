@@ -75,9 +75,9 @@ class WordManagerInstrumentedTest {
         val sample = wordComparison.nextSample()
 
         assertTrue(composeRule.activity.application is HiltTestApplication)
-        composeRule.onNodeWithText("Part 10 · One graph across three modules")
+        composeRule.onNodeWithText("Part 10 - One graph across three modules")
             .assertIsDisplayed()
-        composeRule.onNodeWithText(":app → :feature:words → :core")
+        composeRule.onNodeWithText(":app -> :feature:words -> :core")
             .assertIsDisplayed()
         assertEquals("device-fancy-word", wordManager.nextWord())
         assertEquals("device-basic-word", sample.basic)

@@ -1,6 +1,6 @@
 # Practice 7. Manual graph access and deferred requests
 
-*Tutorial: [7 · Entry points, `Lazy`, and `Provider`](HILT_7_ENTRYPOINTS_LAZY.md) · **Practice 7 of 10***
+*Tutorial: [7 - Entry points, `Lazy`, and `Provider`](HILT_7_ENTRYPOINTS_LAZY.md) - **Practice 7 of 10***
 
 Start from the Part 7 state of [`hilt-practice-app/`](hilt-practice-app/). It contains a real
 `ContentProvider` doorway, an observable `dagger.Lazy`, an unscoped value requested through
@@ -30,13 +30,13 @@ Trace one press of **Query content provider** through this entire path:
 
 ```text
 Part7ViewModel
-  → WordsProviderClient(@ApplicationContext)
-  → ContentResolver.query()
-  → WordsProvider.query()
-  → EntryPointAccessors.fromApplication()
-  → WordsEntryPoint
-  → WordManager
-  → @FancyWords WordsRepository
+  -> WordsProviderClient(@ApplicationContext)
+  -> ContentResolver.query()
+  -> WordsProvider.query()
+  -> EntryPointAccessors.fromApplication()
+  -> WordsEntryPoint
+  -> WordManager
+  -> @FancyWords WordsRepository
 ```
 
 For each step, identify who constructs the object and whether it receives normal injection or
@@ -117,9 +117,9 @@ tracker must be `@Singleton` while the dictionary deliberately remains unscoped.
 test encodes this sequence:
 
 ```text
-resolve WordDefiner → count 0
-first define()      → count 1, dictionary #1
-second define()     → count 1, dictionary #1 again
+resolve WordDefiner -> count 0
+first define()      -> count 1, dictionary #1
+second define()     -> count 1, dictionary #1 again
 ```
 
 Temporarily inject `ExpensiveDictionary` directly into `WordDefiner` and replace

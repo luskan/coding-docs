@@ -1,9 +1,9 @@
-# 7. Entry points, `Lazy`, and `Provider` — the escape hatches
+# 7. Entry points, `Lazy`, and `Provider` -- the escape hatches
 
-*Reading order: [1 · Setup](HILT_1_SETUP.md) → [2 · Basics](HILT_2_BASICS.md) → [3 · Qualifiers](HILT_3_QUALIFIERS.md) → [4 · Scopes](HILT_4_SCOPES.md) → [5 · ViewModels](HILT_5_VIEWMODELS.md) → [6 · Testing](HILT_6_TESTING.md) → **7 · Entry points & Lazy/Provider** → [8 · Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) → [9 · WorkManager](HILT_9_WORKMANAGER.md) → [10 · Multi-module](HILT_10_MULTIMODULE.md)*
+*Reading order: [1 - Setup](HILT_1_SETUP.md) -> [2 - Basics](HILT_2_BASICS.md) -> [3 - Qualifiers](HILT_3_QUALIFIERS.md) -> [4 - Scopes](HILT_4_SCOPES.md) -> [5 - ViewModels](HILT_5_VIEWMODELS.md) -> [6 - Testing](HILT_6_TESTING.md) -> **7 - Entry points & Lazy/Provider** -> [8 - Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) -> [9 - WorkManager](HILT_9_WORKMANAGER.md) -> [10 - Multi-module](HILT_10_MULTIMODULE.md)*
 
 Two loose ends from the core model. First: what if code needs the graph but Hilt neither creates it
-nor supports it as an `@AndroidEntryPoint`—a `ContentProvider` or a library-owned callback? That is
+nor supports it as an `@AndroidEntryPoint`--a `ContentProvider` or a library-owned callback? That is
 `@EntryPoint`. Second: what if a dependency should be requested only on first use, or its binding
 logic should run again for each use? Those are `Lazy<T>` and `Provider<T>`.
 
@@ -25,7 +25,7 @@ holding that reference.
 
 ---
 
-## 1. `@EntryPoint` — reaching the graph from outside
+## 1. `@EntryPoint` -- reaching the graph from outside
 
 `@AndroidEntryPoint` supports Activities, Fragments, Views, Services, and BroadcastReceivers. It
 does not support `ContentProvider`, and third-party libraries can create objects that never pass
@@ -114,17 +114,17 @@ The app's in-process client builds
 `content://${context.packageName}.words/random`. Use `context.packageName`, not the Kotlin
 namespace: this app's namespace is `com.example.myapp`, while its application ID is
 `com.example.myapp.practice`. Because the provider is not exported, exercise it through the app or
-an instrumentation test—not `adb shell content query`, which runs as another process/UID.
+an instrumentation test--not `adb shell content query`, which runs as another process/UID.
 
 ### Match the accessor to the installed component
 
 The object passed to an accessor must be managed by Hilt and must hold the component named by the
 entry point:
 
-- `fromApplication(anApplicationDerivedContext, …)` ↔ `SingletonComponent`,
-- `fromActivity(aHiltActivity, …)` ↔ `ActivityComponent`,
-- `fromFragment(aHiltFragment, …)` ↔ `FragmentComponent`,
-- `fromView(aHiltView, …)` ↔ its `ViewComponent`, or `ViewWithFragmentComponent` for a view with
+- `fromApplication(anApplicationDerivedContext, ...)` <-> `SingletonComponent`,
+- `fromActivity(aHiltActivity, ...)` <-> `ActivityComponent`,
+- `fromFragment(aHiltFragment, ...)` <-> `FragmentComponent`,
+- `fromView(aHiltView, ...)` <-> its `ViewComponent`, or `ViewWithFragmentComponent` for a view with
   `@WithFragmentBindings`.
 
 This pairing is not type-safe at the call site. If an entry point is installed in
@@ -144,7 +144,7 @@ Hilt tests are the important special case. Their normal singleton component belo
 case and is not created until `HiltAndroidRule` runs. An ordinary entry point read during provider
 startup can therefore fail before the rule exists. This app does not need the graph during
 `onCreate()`, so it waits until `query()`. That keeps the ordinary entry point and lets a query made
-after the rule see the normal per-test graph—including Part 6's `androidTest` `@TestInstallIn` fake.
+after the rule see the normal per-test graph--including Part 6's `androidTest` `@TestInstallIn` fake.
 
 If startup truly must read the graph, Hilt has a deliberately different tool:
 
@@ -181,7 +181,7 @@ work, not as a general replacement for normal test injection.
 
 ---
 
-## 2. `Lazy<T>` — request it only on first use
+## 2. `Lazy<T>` -- request it only on first use
 
 `dagger.Lazy<T>` postpones the request for `T` until the first `.get()`. The running app makes
 construction visible rather than inferring it:
@@ -247,7 +247,7 @@ key: `@param:FancyWords Lazy<WordsRepository>` asks for the existing
 
 ---
 
-## 3. `Provider<T>` — re-request the binding on every use
+## 3. `Provider<T>` -- re-request the binding on every use
 
 `javax.inject.Provider<T>.get()` asks Dagger for `T` every time. It controls request timing, not
 object identity:
@@ -323,45 +323,45 @@ class B @Inject constructor(private val a: Provider<A>)
 
 To construct the requested `A`, Dagger constructs `B` with a provider handle without resolving
 another `A`, then completes the original `A`. Do not call `a.get()` from `B`'s constructor, an
-initializer, or another path that runs during construction—the indirection must remain deferred.
+initializer, or another path that runs during construction--the indirection must remain deferred.
 
-Identity still follows §3. A later call to an unscoped `Provider<A>` builds another `A` on every
+Identity still follows section 3. A later call to an unscoped `Provider<A>` builds another `A` on every
 call; an unscoped `Lazy<A>` builds one other `A` on first use and caches it. Scope `A` only if `B`
 must recover the original component-cached instance. Cycles are usually a design smell, so prefer
 removing the two-way ownership when possible.
 
 ---
 
-## Entry points, Lazy & Provider — error → cause
+## Entry points, Lazy & Provider -- error -> cause
 
 | Error | Cause |
 |---|---|
-| `[Dagger/MissingBinding] WordsRepository cannot be provided…` | The entry-point method requested an unavailable exact key—for this graph, plain `WordsRepository` instead of `@FancyWords WordsRepository`—or the key is not visible from its installed component |
-| `ClassCastException: Cannot cast …SingletonC… to …ActivityEntryPoint` | `fromXxx` retrieved a different component from the entry point's `@InstallIn`; match the accessor, installed component, and Hilt-managed host |
-| `[Hilt] @InstallIn-annotated classes must also be annotated with @Module or @EntryPoint: …` | The ordinary entry-point interface is missing `@EntryPoint` |
-| `[Hilt] @EntryPoint … must also be annotated with @InstallIn` | The entry point does not name its component |
+| `[Dagger/MissingBinding] WordsRepository cannot be provided...` | The entry-point method requested an unavailable exact key--for this graph, plain `WordsRepository` instead of `@FancyWords WordsRepository`--or the key is not visible from its installed component |
+| `ClassCastException: Cannot cast ...SingletonC... to ...ActivityEntryPoint` | `fromXxx` retrieved a different component from the entry point's `@InstallIn`; match the accessor, installed component, and Hilt-managed host |
+| `[Hilt] @InstallIn-annotated classes must also be annotated with @Module or @EntryPoint: ...` | The ordinary entry-point interface is missing `@EntryPoint` |
+| `[Hilt] @EntryPoint ... must also be annotated with @InstallIn` | The entry point does not name its component |
 | `IllegalStateException: The component was not created. Check that you have added the HiltAndroidRule.` | A Hilt test requested its ordinary component during provider/application startup; defer access until after the rule, or deliberately use an early entry point with its isolation tradeoffs |
-| `[Hilt] @EarlyEntryPoint can only be installed into the SingletonComponent. Found: […]` | An early entry point was installed in another component |
+| `[Hilt] @EarlyEntryPoint can only be installed into the SingletonComponent. Found: [...]` | An early entry point was installed in another component |
 | `[Dagger/DependencyCycle] Found a dependency cycle:` | A reachable direct constructor cycle exists; redesign it or defer one edge with `Provider`/`Lazy` |
-| `[Dagger/MissingBinding] kotlin.Lazy<…> cannot be provided…` | Imported Kotlin `Lazy` instead of `dagger.Lazy` |
+| `[Dagger/MissingBinding] kotlin.Lazy<...> cannot be provided...` | Imported Kotlin `Lazy` instead of `dagger.Lazy` |
 | `Provider<T>.get()` returns the same object you wanted fresh | `T` is scoped/`@Reusable`, aliases a scoped binding, or its unscoped binding logic returns a reused object; Provider guarantees a new request, not a distinct identity |
 
 ---
 
 ## Where to go next
 
-**[8 · Coroutines & dispatchers](HILT_8_COROUTINES_DISPATCHERS.md)** — inject
+**[8 - Coroutines & dispatchers](HILT_8_COROUTINES_DISPATCHERS.md)** -- inject
 `CoroutineDispatcher`s and an application `CoroutineScope`, a direct application of the qualifiers
 from part 3.
 
 ## Quick reference
 
-| I want to… | Do this |
+| I want to... | Do this |
 |---|---|
 | Read the graph from a provider/library after normal initialization | Public `@EntryPoint` + matching `EntryPointAccessors.fromXxx(...)` |
 | Read `SingletonComponent` during provider/application startup in Hilt tests | `@EarlyEntryPoint` + `EarlyEntryPoints.get(...)`, accepting its separate test component |
-| Match an accessor to a component | Application ↔ singleton; Activity ↔ activity; Fragment ↔ fragment; View ↔ view or view-with-fragment |
+| Match an accessor to a component | Application <-> singleton; Activity <-> activity; Fragment <-> fragment; View <-> view or view-with-fragment |
 | Delay a dependency until first use | Inject `dagger.Lazy<T>`; the wrapper caches its first result |
 | Re-run a binding request each time | Inject `Provider<T>`; identity still follows scope/binding behavior |
 | Reliably create a fresh value | Use a provider for an unscoped binding whose constructor/provider actually creates a new object |
-| Break an A↔B constructor cycle | Keep one edge deferred as `Provider<>` or `Lazy<>` |
+| Break an A<->B constructor cycle | Keep one edge deferred as `Provider<>` or `Lazy<>` |

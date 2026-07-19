@@ -1,6 +1,6 @@
 # Practice 4. Scopes and component lifetimes
 
-*Tutorial: [4 · Scopes](HILT_4_SCOPES.md) · **Practice 4 of 10***
+*Tutorial: [4 - Scopes](HILT_4_SCOPES.md) - **Practice 4 of 10***
 
 Start from the Part 4 state of [`hilt-practice-app/`](hilt-practice-app/). The screen exposes
 instance IDs, request counts, and identity comparisons so lifecycle claims can be observed instead
@@ -8,7 +8,7 @@ of inferred. Work on a throwaway branch and restore the green graph after each e
 
 ## Self-check questions
 
-1. What does “one scoped instance” mean precisely?
+1. What does "one scoped instance" mean precisely?
 2. Why is class-level `@Singleton` preferable to scoping only an interface's `@Binds` method when
    consumers may request both the interface and concrete type?
 3. What happens to `@ActivityScoped` and `@ActivityRetainedScoped` objects on rotation?
@@ -48,7 +48,7 @@ Temporarily make these coordinated changes for the fancy binding only:
    ```
 
    Display both repository IDs. Also compare this field with `WordManager`'s repository and with
-   the direct concrete field. Temporarily relabel the existing `@Singleton fancy` UI row—the direct
+   the direct concrete field. Temporarily relabel the existing `@Singleton fancy` UI row--the direct
    concrete value shown there is no longer the scoped one during this experiment.
 
 Build and launch again.
@@ -57,8 +57,8 @@ Build and launch again.
 interface key. The direct `FancyWordsRepositoryImpl` request bypasses it, has a different ID, and
 compares unequal.
 
-Restore class-level `@Singleton` and remove it from `@Binds`. This makes “there is one concrete
-repository” true regardless of which key reaches it.
+Restore class-level `@Singleton` and remove it from `@Binds`. This makes "there is one concrete
+repository" true regardless of which key reaches it.
 
 ### 3. Compare activity and activity-retained scopes
 
@@ -108,7 +108,7 @@ adb shell am start -W \
 
 **Check:** repository state returns to its initial count because `SingletonComponent` lasts for the
 process, not forever. Static teaching IDs can start from `1` again after process death, so use the
-reset request count—not the numeric ID alone—as the evidence.
+reset request count--not the numeric ID alone--as the evidence.
 
 ---
 

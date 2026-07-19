@@ -1,6 +1,6 @@
 # Practice 5. Hilt ViewModels and saved state
 
-*Tutorial: [5 · ViewModels](HILT_5_VIEWMODELS.md) · **Practice 5 of 10***
+*Tutorial: [5 - ViewModels](HILT_5_VIEWMODELS.md) - **Practice 5 of 10***
 
 Start from the Part 5 state of [`hilt-practice-app/`](hilt-practice-app/). Its screen deliberately
 requests one `WordViewModel` through both an Activity delegate and Compose, exposes identity and
@@ -130,7 +130,7 @@ Run one experiment at a time, capture the result, and restore the green app:
 1. Add `@Inject lateinit var invalidViewModel: WordViewModel` to `MainActivity`. Build and identify
    Dagger's diagnostic prohibiting direct injection of a `@HiltViewModel`; request it through
    `ViewModelProvider` instead.
-2. Add `WordSession`—the existing `@ActivityScoped` class—as a constructor parameter of
+2. Add `WordSession`--the existing `@ActivityScoped` class--as a constructor parameter of
    `WordViewModel`. Build and trace why `ViewModelComponent` cannot see a binding from its sibling
    `ActivityComponent`.
 3. In an Activity reduced to only `private val viewModel: WordViewModel by viewModels()`, remove

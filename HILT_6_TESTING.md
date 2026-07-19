@@ -1,11 +1,11 @@
-# 6. Testing with Hilt — swapping the graph for fakes
+# 6. Testing with Hilt -- swapping the graph for fakes
 
-*Reading order: [1 · Setup](HILT_1_SETUP.md) → [2 · Basics](HILT_2_BASICS.md) → [3 · Qualifiers](HILT_3_QUALIFIERS.md) → [4 · Scopes](HILT_4_SCOPES.md) → [5 · ViewModels](HILT_5_VIEWMODELS.md) → **6 · Testing** → [7 · Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) → [8 · Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) → [9 · WorkManager](HILT_9_WORKMANAGER.md) → [10 · Multi-module](HILT_10_MULTIMODULE.md)*
+*Reading order: [1 - Setup](HILT_1_SETUP.md) -> [2 - Basics](HILT_2_BASICS.md) -> [3 - Qualifiers](HILT_3_QUALIFIERS.md) -> [4 - Scopes](HILT_4_SCOPES.md) -> [5 - ViewModels](HILT_5_VIEWMODELS.md) -> **6 - Testing** -> [7 - Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) -> [8 - Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) -> [9 - WorkManager](HILT_9_WORKMANAGER.md) -> [10 - Multi-module](HILT_10_MULTIMODULE.md)*
 
-Parts 2–3 kept saying the payoff of depending on an *interface* is that you can swap the
+Parts 2-3 kept saying the payoff of depending on an *interface* is that you can swap the
 implementation in tests. This is where you collect that payoff. By the end you can replace
 the qualified `WordsRepository` bindings with fakes for one test, or for a whole test source set,
-without touching production code — and run them on the plain JVM with Robolectric.
+without touching production code -- and run them on the plain JVM with Robolectric.
 
 ---
 
@@ -16,13 +16,13 @@ without touching production code — and run them on the plain JVM with Robolect
 In production Hilt assembles one component tree from your modules. Under test, Hilt assembles a
 *separate* tree from a `HiltTestApplication`, and gives you three hooks to change it:
 
-1. **Replace a module everywhere** — `@TestInstallIn` swaps a production module for a test module
+1. **Replace a module everywhere** -- `@TestInstallIn` swaps a production module for a test module
    across the entire suite.
-2. **Remove a module for one test** — `@UninstallModules` drops it, and you supply the missing
+2. **Remove a module for one test** -- `@UninstallModules` drops it, and you supply the missing
    binding inline.
-3. **Bind a field's value directly** — `@BindValue` injects a value you hold in the test class.
+3. **Bind a field's value directly** -- `@BindValue` injects a value you hold in the test class.
 
-Everything else — `@Inject`, scopes, qualifiers — behaves exactly as in production. A test class is
+Everything else -- `@Inject`, scopes, qualifiers -- behaves exactly as in production. A test class is
 just one more injection site, marked `@HiltAndroidTest` instead of `@AndroidEntryPoint`.
 
 ---
@@ -49,7 +49,7 @@ dependencies {
     androidTestImplementation("androidx.test.ext:junit:1.2.1")
     androidTestImplementation("androidx.test:runner:1.6.2")
 
-    // Needed only for the Compose UI example in §6.
+    // Needed only for the Compose UI example in section 6.
     androidTestImplementation(platform("androidx.compose:compose-bom:2024.12.01"))
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
 }
@@ -77,18 +77,18 @@ class HiltTestRunner : AndroidJUnitRunner() {
 ```
 
 ```kotlin
-// app/build.gradle.kts → android { defaultConfig { ... } }
+// app/build.gradle.kts -> android { defaultConfig { ... } }
 testInstrumentationRunner = "com.example.myapp.HiltTestRunner"
 ```
 
-Forgetting the runner is the #1 instrumented-test failure — see the error table.
+Forgetting the runner is the #1 instrumented-test failure -- see the error table.
 
 ---
 
 ## 2. The minimal test
 
 This is the common Hilt-rule core of a test. As written, place it in `androidTest/` under the
-custom runner from §1. For a local `test/` version, add the `@Config` annotation from §5.
+custom runner from section 1. For a local `test/` version, add the `@Config` annotation from section 5.
 
 ```kotlin
 package com.example.myapp
@@ -122,23 +122,23 @@ class WordManagerTest {
 }
 ```
 
-Two rules mirror the Activity case from part 2 §1:
+Two rules mirror the Activity case from part 2 section 1:
 
 1. **`HiltAndroidRule` must run before any rule that touches an injected field.** If you have other
-   rules, order them — `@get:Rule(order = 0) val hiltRule = …`.
+   rules, order them -- `@get:Rule(order = 0) val hiltRule = ...`.
 2. **A test class's injected fields are not usable until `hiltRule.inject()`** (call it in
-   `@Before`). Reading one earlier throws `UninitializedPropertyAccessException` — the same failure
+   `@Before`). Reading one earlier throws `UninitializedPropertyAccessException` -- the same failure
    as touching an Activity field before `super.onCreate()`. An `@AndroidEntryPoint` Activity is
    injected through its own lifecycle; ordering Hilt's rule first prepares its test component
    before an Activity/Compose rule launches it.
 
-This test uses the **real** graph — `WordManager` reaches the real qualified
+This test uses the **real** graph -- `WordManager` reaches the real qualified
 `FancyWordsRepositoryImpl`. That's a fine integration test. To swap in a fake, use one of the next
 two techniques.
 
 ---
 
-## 3. Swapping the whole suite — `@TestInstallIn`
+## 3. Swapping the whole suite -- `@TestInstallIn`
 
 Write the fake, then a test module that *replaces* the production `RepositoryModule`:
 
@@ -195,8 +195,8 @@ object FakeRepositoryModule {
 
 Put it in `androidTest/` (or `test/`). Now **every** Hilt test in that source set gets the fake
 bindings, and you changed nothing in production. `replaces` must name the exact installed module.
-The robust default is to reproduce all of that module's keys — here both
-`@BasicWords WordsRepository` and `@FancyWords WordsRepository` — including scopes whose sharing
+The robust default is to reproduce all of that module's keys -- here both
+`@BasicWords WordsRepository` and `@FancyWords WordsRepository` -- including scopes whose sharing
 your tests rely on. Strictly, only removed keys reachable in that test graph have to be supplied.
 This is the right tool for a fake you want everywhere (a fake network layer, an in-memory
 database).
@@ -208,7 +208,7 @@ sit in the same source set, the suite-wide test module is still present; uninsta
 
 ---
 
-## 4. Swapping for one test — `@UninstallModules` + `@BindValue`
+## 4. Swapping for one test -- `@UninstallModules` + `@BindValue`
 
 When only one test needs a different binding, uninstall the production module for that class and
 bind a field instead:
@@ -273,7 +273,7 @@ Sets and maps have `@BindValueIntoSet` / `@BindValueIntoMap`.
 
 ---
 
-## 5. Running on the JVM — Robolectric
+## 5. Running on the JVM -- Robolectric
 
 You don't need a device to exercise the graph. Robolectric runs the whole thing on the JVM:
 
@@ -329,14 +329,14 @@ This is the fastest verification loop for DI wiring: no emulator, runs in `./gra
 
 A `@HiltViewModel` is validated at compile time like any binding, so a graph test that injects its
 dependencies already proves it can be built. To exercise it as a ViewModel, construct it directly
-with a fake (constructor injection makes this trivial — part 2's payoff):
+with a fake (constructor injection makes this trivial -- part 2's payoff):
 
 ```kotlin
 @Test fun viewModelExposesAWord() {
     val vm = WordViewModel(
         wordManager = WordManager(FakeWordsRepository()),
         savedStateHandle = SavedStateHandle(),
-    )   // no Hilt needed — just constructors
+    )   // no Hilt needed -- just constructors
 
     assertEquals("test-word", vm.currentWord)
     vm.chooseAndSaveAnotherWord()
@@ -357,39 +357,39 @@ you want to verify. Hilt's rule must wrap the rule that launches it:
 If you need an otherwise empty test host, Hilt does not ship one. Put an
 `@AndroidEntryPoint HiltTestActivity` in `src/debug/java` and declare it in
 `src/debug/AndroidManifest.xml`, because the Activity class and manifest entry must belong to the
-target debug APK—not only the test APK. Then point the Compose rule at it. This part needs a
+target debug APK--not only the test APK. Then point the Compose rule at it. This part needs a
 device/emulator; the graph itself is already covered by the JVM tests above.
 
 ---
 
-## Testing — error → cause
+## Testing -- error -> cause
 
 | Error | Cause |
 |---|---|
-| Instrumented test: `IllegalStateException: Hilt test, … cannot use a @HiltAndroidApp application but found …MyApplication` | The custom runner was not selected, so the test launched the real app instead of `HiltTestApplication` — set `testInstrumentationRunner = "…HiltTestRunner"` (§1) |
+| Instrumented test: `IllegalStateException: Hilt test, ... cannot use a @HiltAndroidApp application but found ...MyApplication` | The custom runner was not selected, so the test launched the real app instead of `HiltTestApplication` -- set `testInstrumentationRunner = "...HiltTestRunner"` (section 1) |
 | `UninitializedPropertyAccessException` on an `@Inject` field | Forgot `hiltRule.inject()` in `@Before`, or read the field before it ran |
-| `[Hilt] @BindValue fields cannot be private. Found: …` | The annotated Kotlin property is private; expose a non-private property/getter or use an accessible `@JvmField` |
-| `[Dagger/MissingBinding] @FancyWords WordsRepository cannot be provided…` | The test supplied plain `WordsRepository` or removed the module without filling the qualified key that a reachable consumer requests |
-| `WordsRepository is bound multiple times` in a test | A `@TestInstallIn` (or `@BindValue`) adds the same qualified key without `replaces`/`@UninstallModules` removing the existing one — they collide |
-| `@TestInstallIn#replaces() can only contain @InstallIn modules, but found: …` | `replaces` names a class that is not an installed Hilt module |
+| `[Hilt] @BindValue fields cannot be private. Found: ...` | The annotated Kotlin property is private; expose a non-private property/getter or use an accessible `@JvmField` |
+| `[Dagger/MissingBinding] @FancyWords WordsRepository cannot be provided...` | The test supplied plain `WordsRepository` or removed the module without filling the qualified key that a reachable consumer requests |
+| `WordsRepository is bound multiple times` in a test | A `@TestInstallIn` (or `@BindValue`) adds the same qualified key without `replaces`/`@UninstallModules` removing the existing one -- they collide |
+| `@TestInstallIn#replaces() can only contain @InstallIn modules, but found: ...` | `replaces` names a class that is not an installed Hilt module |
 | Tests still use real values, or the fake keys collide with production keys | The replacement is in the wrong source set or names a different valid module, so the intended production module was not replaced |
-| Robolectric test: `Unable to resolve host` / real network hit | The real module wasn't replaced — Robolectric runs production bindings unless you swap them (§3/§4) |
+| Robolectric test: `Unable to resolve host` / real network hit | The real module wasn't replaced -- Robolectric runs production bindings unless you swap them (sections 3 and 4) |
 | `Tests cannot be annotated with @AndroidEntryPoint. Please use @HiltAndroidTest` | You annotated the test class with `@AndroidEntryPoint` instead of `@HiltAndroidTest` |
 
 ---
 
 ## Where to go next
 
-**[7 · Entry points & `Lazy`/`Provider`](HILT_7_ENTRYPOINTS_LAZY.md)** — reaching the graph from
+**[7 - Entry points & `Lazy`/`Provider`](HILT_7_ENTRYPOINTS_LAZY.md)** -- reaching the graph from
 classes Hilt doesn't create, and deferring or repeating instance creation.
 
 ## Quick reference
 
-| I want to… | Do this |
+| I want to... | Do this |
 |---|---|
 | Mark a test as an injection site | `@HiltAndroidTest` + `@get:Rule(order = 0)` for `HiltAndroidRule` + `hiltRule.inject()` |
 | Run against the right app | Robolectric: `@Config(application = HiltTestApplication::class, sdk = [34])`; instrumented: custom `HiltTestRunner` |
-| Replace a module for the whole suite | `@TestInstallIn(components = […], replaces = [RealModule::class])` |
+| Replace a module for the whole suite | `@TestInstallIn(components = [...], replaces = [RealModule::class])` |
 | Replace a binding for one test | `@UninstallModules(RealModule::class)` + an accessible, qualifier-matching `@BindValue` property (`@JvmField` optional) |
-| Test a ViewModel | Construct it directly with a fake — no Hilt |
+| Test a ViewModel | Construct it directly with a fake -- no Hilt |
 | Test Compose UI with Hilt | Hilt rule at order 0 + `createAndroidComposeRule<AnAndroidEntryPointActivity>()` at order 1 |

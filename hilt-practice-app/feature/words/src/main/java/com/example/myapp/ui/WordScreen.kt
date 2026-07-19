@@ -44,13 +44,13 @@ fun WordScreen(
         verticalArrangement = Arrangement.Top,
     ) {
         Text(
-            text = "Part 10 · One graph across three modules",
+            text = "Part 10 - One graph across three modules",
             style = MaterialTheme.typography.headlineSmall,
         )
         Spacer(Modifier.height(16.dp))
-        Text(":app → :feature:words → :core")
+        Text(":app -> :feature:words -> :core")
         Spacer(Modifier.height(8.dp))
-        Text("Main → IO · application scope → Default → IO")
+        Text("Main -> IO - application scope -> Default -> IO")
         Spacer(Modifier.height(16.dp))
         Text(
             text = composeViewModel.currentWord,
@@ -58,7 +58,7 @@ fun WordScreen(
         )
         Text("Saved changes: ${composeViewModel.savedChanges}")
         Text("Activity delegate === Compose: ${activityViewModel === composeViewModel}")
-        Text("Activity session #$activitySessionId · same: $activitySessionsSame")
+        Text("Activity session #$activitySessionId - same: $activitySessionsSame")
         Text(detailViewModel.description)
         Spacer(Modifier.height(12.dp))
         Button(onClick = composeViewModel::chooseAndSaveAnotherWord) {
@@ -67,10 +67,10 @@ fun WordScreen(
 
         Spacer(Modifier.height(24.dp))
         Text(
-            text = "ContentProvider → EntryPointAccessors → WordManager",
+            text = "ContentProvider -> EntryPointAccessors -> WordManager",
             style = MaterialTheme.typography.titleMedium,
         )
-        Text("Provider returned: ${part7ViewModel.providerWord ?: "—"}")
+        Text("Provider returned: ${part7ViewModel.providerWord ?: "--"}")
         Spacer(Modifier.height(8.dp))
         Button(onClick = part7ViewModel::queryContentProvider) {
             Text("Query content provider")
@@ -84,7 +84,7 @@ fun WordScreen(
         Text("Definitions: ${part7ViewModel.definitions}")
         Text("Dictionary constructions: ${part7ViewModel.dictionaryConstructionCount}")
         Text("Dictionary instance: ${part7ViewModel.dictionaryInstanceId.asDisplayId()}")
-        Text(part7ViewModel.definitionText ?: "Definition: —")
+        Text(part7ViewModel.definitionText ?: "Definition: --")
         Spacer(Modifier.height(8.dp))
         Button(onClick = { part7ViewModel.define(composeViewModel.currentWord) }) {
             Text("Define current word")
@@ -96,7 +96,7 @@ fun WordScreen(
             style = MaterialTheme.typography.titleMedium,
         )
         Text("Round IDs: ${part7ViewModel.roundIds.asDisplayIds()}")
-        Text("Fresh unscoped instances: ${part7ViewModel.freshRoundInstances ?: "—"}")
+        Text("Fresh unscoped instances: ${part7ViewModel.freshRoundInstances ?: "--"}")
         Spacer(Modifier.height(8.dp))
         Button(onClick = part7ViewModel::createTwoRounds) {
             Text("Create two rounds")
@@ -104,7 +104,7 @@ fun WordScreen(
 
         Spacer(Modifier.height(24.dp))
         Text(
-            text = "@MainDispatcher → @IoDispatcher",
+            text = "@MainDispatcher -> @IoDispatcher",
             style = MaterialTheme.typography.titleMedium,
         )
         Text("Async load: ${part8ViewModel.asyncLoadStatus.asDisplayName()}")
@@ -129,7 +129,7 @@ fun WordScreen(
 
         Spacer(Modifier.height(24.dp))
         Text(
-            text = "@HiltWorker → HiltWorkerFactory → AsyncWordsLoader",
+            text = "@HiltWorker -> HiltWorkerFactory -> AsyncWordsLoader",
             style = MaterialTheme.typography.titleMedium,
         )
         Text("Worker state: ${part9ViewModel.workerState.asWorkerDisplayName()}")
@@ -142,15 +142,15 @@ fun WordScreen(
     }
 }
 
-private fun Int?.asDisplayId(): String = this?.let { "#$it" } ?: "—"
+private fun Int?.asDisplayId(): String = this?.let { "#$it" } ?: "--"
 
 private fun Pair<Int, Int>?.asDisplayIds(): String =
-    this?.let { "#${it.first}, #${it.second}" } ?: "—"
+    this?.let { "#${it.first}, #${it.second}" } ?: "--"
 
 private fun Enum<*>.asDisplayName(): String = name.lowercase()
 
 private fun Enum<*>?.asWorkerDisplayName(): String = this?.name?.lowercase() ?: "not enqueued"
 
-private fun List<String>.asDisplayWords(): String = if (isEmpty()) "—" else joinToString()
+private fun List<String>.asDisplayWords(): String = if (isEmpty()) "--" else joinToString()
 
 private const val DETAIL_WORD_ID = 7

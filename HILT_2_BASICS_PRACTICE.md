@@ -1,11 +1,11 @@
 # Practice 2. Field injection, constructor injection, and modules
 
-*Tutorial: [2 · Basics](HILT_2_BASICS.md) · **Practice 2 of 10***
+*Tutorial: [2 - Basics](HILT_2_BASICS.md) - **Practice 2 of 10***
 
 Start from the Part 2 state of [`hilt-practice-app/`](hilt-practice-app/). The current graph is:
 
 ```text
-MainActivity → WordManager → WordsRepository → WordsRepositoryImpl
+MainActivity -> WordManager -> WordsRepository -> WordsRepositoryImpl
 ```
 
 Work on a throwaway branch. Keep the activity dependent only on `WordManager`; the exercises should
@@ -58,7 +58,7 @@ module declaration.
 
 ### 3. Explain the completed graph from the injection site
 
-Draw the graph after Tasks 1–2. For every edge, label:
+Draw the graph after Tasks 1-2. For every edge, label:
 
 - who requests the dependency,
 - whether Hilt calls an `@Inject` constructor, follows a `@Binds` alias, or invokes `@Provides`, and
@@ -108,7 +108,7 @@ repository's words in uppercase, and no activity code constructs a dependency ma
 3. Generated code in another class assigns the field, so it needs accessible visibility. For an
    `@AndroidEntryPoint` activity, that assignment occurs during `super.onCreate()`; an earlier read
    sees an uninitialized `lateinit` property.
-4. Read it as concrete parameter type → requested return/interface type. When a consumer asks for
+4. Read it as concrete parameter type -> requested return/interface type. When a consumer asks for
    the return type, Hilt obtains the parameter type and returns it through that binding.
 5. No. `@InstallIn(SingletonComponent::class)` controls where a binding is visible. Reuse requires
    a scope annotation, introduced in Part 4; the Part 2 bindings remain unscoped.

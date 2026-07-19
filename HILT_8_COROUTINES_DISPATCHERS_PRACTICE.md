@@ -1,6 +1,6 @@
 # Practice 8. Controlling coroutine execution and ownership
 
-*Tutorial: [8 · Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) · **Practice 8 of 10***
+*Tutorial: [8 - Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) - **Practice 8 of 10***
 
 Start from the Part 8 state of [`hilt-practice-app/`](hilt-practice-app/). It preserves the
 synchronous repository used by earlier parts, adds an injected-dispatcher `AsyncWordsLoader`, and
@@ -31,21 +31,21 @@ Trace the first Part 8 button from ownership to execution context:
 
 ```text
 Part8ViewModel.viewModelScope
-  → @MainDispatcher
-  → AsyncWordsLoader
-  → @IoDispatcher
-  → @FancyWords WordsRepository
+  -> @MainDispatcher
+  -> AsyncWordsLoader
+  -> @IoDispatcher
+  -> @FancyWords WordsRepository
 ```
 
 Then trace the application sync:
 
 ```text
 WordSyncManager
-  → @ApplicationScope CoroutineScope
-  → @DefaultDispatcher
-  → AsyncWordsLoader
-  → @IoDispatcher
-  → @FancyWords WordsRepository
+  -> @ApplicationScope CoroutineScope
+  -> @DefaultDispatcher
+  -> AsyncWordsLoader
+  -> @IoDispatcher
+  -> @FancyWords WordsRepository
 ```
 
 For every arrow, identify the exact Dagger key, the component that owns it, and the job that owns
@@ -239,7 +239,7 @@ imports `kotlinx.coroutines.cancel`. Run only the temporary method:
 **Check:** `runCurrent()` and `advanceTimeBy()` on the injected scheduler cannot advance work
 queued on `splitIo.scheduler`; that scheduler must be driven separately. In APIs that combine both
 test dispatchers in one test scope,
-coroutines-test can fail explicitly with `Detected use of different schedulers…`. Either way, the
+coroutines-test can fail explicitly with `Detected use of different schedulers...`. Either way, the
 repair is one scheduler passed to every `TestDispatcher`; creating several test dispatchers is
 safe only when all receive that same scheduler.
 

@@ -1,6 +1,6 @@
-# 9. WorkManager — injecting into a Worker
+# 9. WorkManager -- injecting into a Worker
 
-*Reading order: [1 · Setup](HILT_1_SETUP.md) → [2 · Basics](HILT_2_BASICS.md) → [3 · Qualifiers](HILT_3_QUALIFIERS.md) → [4 · Scopes](HILT_4_SCOPES.md) → [5 · ViewModels](HILT_5_VIEWMODELS.md) → [6 · Testing](HILT_6_TESTING.md) → [7 · Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) → [8 · Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) → **9 · WorkManager** → [10 · Multi-module](HILT_10_MULTIMODULE.md)*
+*Reading order: [1 - Setup](HILT_1_SETUP.md) -> [2 - Basics](HILT_2_BASICS.md) -> [3 - Qualifiers](HILT_3_QUALIFIERS.md) -> [4 - Scopes](HILT_4_SCOPES.md) -> [5 - ViewModels](HILT_5_VIEWMODELS.md) -> [6 - Testing](HILT_6_TESTING.md) -> [7 - Entry points & Lazy/Provider](HILT_7_ENTRYPOINTS_LAZY.md) -> [8 - Coroutines](HILT_8_COROUTINES_DISPATCHERS.md) -> **9 - WorkManager** -> [10 - Multi-module](HILT_10_MULTIMODULE.md)*
 
 A Worker is created by WorkManager, so normal constructor injection cannot supply every argument.
 AndroidX Hilt bridges that framework-owned construction to the same application graph used by the
@@ -119,7 +119,7 @@ The constructor contract is strict:
 - the second is the exact, unqualified WorkerParameters type;
 - both have @Assisted and neither is wrapped in Lazy or Provider;
 - every other parameter is a normal graph dependency;
-- a nested Worker must be a static nested class—a Kotlin inner class is not valid.
+- a nested Worker must be a static nested class--a Kotlin inner class is not valid.
 
 Do not write an @AssistedFactory for this Worker. The AndroidX processor generates the
 WorkManager-shaped factory contract.
@@ -130,7 +130,7 @@ valid; `@Singleton` and compatible `@Reusable` bindings can also be available th
 `@ActivityScoped WordSession`, `@ViewModelScoped` object, Activity, or ViewModel is not.
 
 doWork() awaits loader.load(), whose withContext(@IoDispatcher) keeps the work structured.
-CoroutineWorker otherwise uses its configured worker coroutine context—Dispatchers.Default by
+CoroutineWorker otherwise uses its configured worker coroutine context--Dispatchers.Default by
 default in this setup. The output is intentionally small: WorkManager Data is for compact,
 persistable values, not large payloads.
 
@@ -331,7 +331,7 @@ reads its output. A fast request can finish between emissions, so observers are 
 display every transient state such as RUNNING:
 
 ```text
-@HiltWorker → HiltWorkerFactory → AsyncWordsLoader
+@HiltWorker -> HiltWorkerFactory -> AsyncWordsLoader
 Worker state: succeeded
 Worker words: dragonfruit, kumquat, persimmon
 ```
@@ -472,33 +472,33 @@ words.
 
 ---
 
-## WorkManager — error → cause
+## WorkManager -- error -> cause
 
 | Error | Cause |
 |---|---|
-| Unresolved `HiltWorker`/`HiltWorkerFactory` imports, or processor: `To use @HiltWorker you must add the 'work' artifact…` | Missing `implementation("androidx.hilt:hilt-work:1.3.0")` |
+| Unresolved `HiltWorker`/`HiltWorkerFactory` imports, or processor: `To use @HiltWorker you must add the 'work' artifact...` | Missing `implementation("androidx.hilt:hilt-work:1.3.0")` |
 | `Worker constructor should be annotated with @AssistedInject instead of @Inject.` | A `@HiltWorker` constructor uses ordinary `@Inject` |
 | `@HiltWorker annotated class should contain exactly one @AssistedInject annotated constructor.` | The Worker has no assisted constructor or has more than one |
 | `@AssistedInject annotated constructors must not be private.` | The Worker's assisted constructor is private |
 | `Missing @Assisted annotation in param 'context'.` | `Context` or `WorkerParameters` is not marked `@Assisted` |
-| `The 'Context' parameter must be declared before the 'WorkerParameters'…` | The exact assisted `Context` and `WorkerParameters` are reversed; restore that order |
-| `[Dagger/MissingBinding] …WordsRepository cannot be provided…` | The Worker requested the nonexistent unqualified repository key; request `@BasicWords`/`@FancyWords` or inject `AsyncWordsLoader` |
-| `[Dagger/IncompatiblyScopedBindings] …SingletonC scoped with @Singleton may not reference bindings with different scopes…` | The Worker made an `@ActivityScoped`/`@ViewModelScoped` binding reachable from `SingletonComponent`; inject a binding that is available from `SingletonComponent` instead |
-| Runtime `Could not instantiate …SyncWordsWorker`, usually followed by `NoSuchMethodException` / `Could not create Worker` | The AndroidX processor did not generate the map entry, or WorkManager was not given `HiltWorkerFactory`; reflection cannot call this Worker's three-argument constructor |
-| `WorkManager is not initialized properly…` | The default initializer was removed, but the Application is neither a `Configuration.Provider` nor manually initializing WorkManager once |
-| `WorkManager is already initialized…` | Two initialization paths ran: default plus manual, on-demand plus later manual, or manual initialization twice |
+| `The 'Context' parameter must be declared before the 'WorkerParameters'...` | The exact assisted `Context` and `WorkerParameters` are reversed; restore that order |
+| `[Dagger/MissingBinding] ...WordsRepository cannot be provided...` | The Worker requested the nonexistent unqualified repository key; request `@BasicWords`/`@FancyWords` or inject `AsyncWordsLoader` |
+| `[Dagger/IncompatiblyScopedBindings] ...SingletonC scoped with @Singleton may not reference bindings with different scopes...` | The Worker made an `@ActivityScoped`/`@ViewModelScoped` binding reachable from `SingletonComponent`; inject a binding that is available from `SingletonComponent` instead |
+| Runtime `Could not instantiate ...SyncWordsWorker`, usually followed by `NoSuchMethodException` / `Could not create Worker` | The AndroidX processor did not generate the map entry, or WorkManager was not given `HiltWorkerFactory`; reflection cannot call this Worker's three-argument constructor |
+| `WorkManager is not initialized properly...` | The default initializer was removed, but the Application is neither a `Configuration.Provider` nor manually initializing WorkManager once |
+| `WorkManager is already initialized...` | Two initialization paths ran: default plus manual, on-demand plus later manual, or manual initialization twice |
 | `Data cannot occupy more than 10240 bytes when serialized` | Input/output `Data` exceeded WorkManager's size limit; persist the payload elsewhere and pass a compact key |
 
 ---
 
 ## Where to go next
 
-**[10 · Hilt in a multi-module project](HILT_10_MULTIMODULE.md)** — move the implementation and
+**[10 - Hilt in a multi-module project](HILT_10_MULTIMODULE.md)** -- move the implementation and
 bindings into library modules while keeping one application-wide Hilt graph.
 
 ## Quick reference
 
-| I want to… | Do this |
+| I want to... | Do this |
 |---|---|
 | Inject graph dependencies into a Worker | `@HiltWorker` plus one `@AssistedInject` constructor |
 | Accept WorkManager's runtime arguments | First `@Assisted Context`, then `@Assisted WorkerParameters`; exact and unqualified |

@@ -1,6 +1,6 @@
 # Practice 10. Splitting one Hilt graph across Gradle modules
 
-*Tutorial: [10 · Multi-module](HILT_10_MULTIMODULE.md) · **Practice 10 of 10***
+*Tutorial: [10 - Multi-module](HILT_10_MULTIMODULE.md) - **Practice 10 of 10***
 
 Start from the Part 10 state of [`hilt-practice-app/`](hilt-practice-app/). The production app is
 now split into `:app`, `:core`, and `:feature:words`, while one application root assembles the
@@ -17,7 +17,7 @@ every experiment.
    processor, where must AndroidX's Worker processor run, and where does this Dagger 2.60 build need
    `error_prone_annotations`?
 3. What do `implementation(project(":core"))`, `api(project(":core"))`, and a direct
-   `:app` → `:core` dependency each change? Which of them can expose an `internal` core class?
+   `:app` -> `:core` dependency each change? Which of them can expose an `internal` core class?
 4. Why is `RepositoryModule` public while its two `@Binds` methods and concrete repositories are
    internal, and what Part 6 test behavior would an internal production module break?
 5. What different boundaries are proved by generated-code/manifest inspection, the JVM graph test,
@@ -32,8 +32,8 @@ Answer these before looking at the final section.
 Draw the real dependency graph without looking at the tutorial, then compare it with:
 
 ```text
-:app ─────────────────→ :core
-  └──→ :feature:words ─→ :core
+:app ------------------------> :core
+  `----> :feature:words -----> :core
 ```
 
 For every item below, write down its source-owning Gradle module, generated-code owner, Hilt
@@ -61,14 +61,14 @@ adb shell am start -W \
 ```
 
 **Check:** all 12 JVM tests and the one cumulative device test pass. The normal APK displays
-`Part 10 · One graph across three modules` and `:app → :feature:words → :core`. After pressing
+`Part 10 - One graph across three modules` and `:app -> :feature:words -> :core`. After pressing
 **Enqueue injected worker**, it reaches `Worker state: succeeded` and returns the production fancy
 words.
 
 For that one running request, distinguish the three axes explicitly:
 
 ```text
-Gradle path:       :app → :feature:words → :core
+Gradle path:       :app -> :feature:words -> :core
 Hilt ownership:    SyncWordsWorker factory map + dependencies in SingletonComponent
 Kotlin visibility: feature source names public AsyncWordsLoader, not internal repositories
 ```
@@ -432,7 +432,7 @@ the committed baseline with 12 JVM tests, one device test, and the normal produc
    expose an internal class; Kotlin visibility remains a separate boundary from Gradle API exposure
    and Hilt aggregation.
 4. The public module is an intentional cross-module test seam: Part 6's app tests must name it in
-   `@TestInstallIn(replaces = …)` and `@UninstallModules`. Hilt 2.60 rejects an internal module in
+   `@TestInstallIn(replaces = ...)` and `@UninstallModules`. Hilt 2.60 rejects an internal module in
    `replaces`, and Kotlin would also prevent app test source from naming it. Keeping the concrete
    repositories and binding methods internal prevents implementation types from entering core's
    public API while still letting generated core code install the bindings.
